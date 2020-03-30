@@ -709,6 +709,8 @@ subroutine fetch_CN_for_growth(cc)
 
 end subroutine vegn_growth_EW ! daily
 
+
+
 !=================================================
 ! Weng, 2017-10-26
 subroutine update_layer_LAI(vegn)
@@ -968,7 +970,8 @@ subroutine vegn_nat_mortality (vegn, deltat)
      !deadtrees = cc%nindivs*(1.0-exp(0.0-deathrate*deltat/seconds_per_year)) ! individuals / m2
      deadtrees = cc%nindivs * MIN(1.0,deathrate*deltat/seconds_per_year) ! individuals / m2
      ! Carbon and Nitrogen from dead plants to soil pools
-     call plant2soil(vegn,cc,deadtrees)
+
+     call plant2soil(vegn, cc, deadtrees)
      ! Update plant density
      cc%nindivs = cc%nindivs - deadtrees
      end associate
@@ -1161,6 +1164,10 @@ subroutine vegn_reproduction (vegn)
         cc%nindivs = seedC(i)/sp%seedlingsize
 
         cc%species = reproPFTs(i)
+
+        ! ! species identity is actually never 0
+        ! if (cc%species==0) stop 'species identity is 0'
+
         cc%status  = LEAF_OFF
         cc%firstlayer = 0
         cc%topyear = 0.0
@@ -1575,6 +1582,11 @@ subroutine SOMdecomposition(vegn, tsoil, thetaS)
   N_loss = MAX(0.,vegn%mineralN) * A * K_nitrogen * dt_fast_yr
 !  N_loss = MAX(0.,vegn%mineralN) * (1. - exp(0.0 - etaN*runoff - A*K_nitrogen*dt_fast_yr))
   N_loss = vegn%mineralN * MIN(0.25, (A * K_nitrogen * dt_fast_yr + etaN*runoff))
+
+  ! ! xxx debug
+  ! ! print*,'N_loss ', N_loss
+  ! N_loss = 0.0
+
   vegn%Nloss_yr = vegn%Nloss_yr + N_loss + DON_loss
 
   vegn%mineralN = vegn%mineralN - N_loss       &
@@ -1585,6 +1597,10 @@ subroutine SOMdecomposition(vegn, tsoil, thetaS)
                   + vegn%N_input * dt_fast_yr  &
                   + fast_N_free + slow_N_free  &
                   + micr_C_loss/CNm
+
+  ! ! xxx debug: slightly different dynamics are caused by mineralN
+  ! print*,N_loss, vegn%N_input, fast_N_free, slow_N_free, micr_C_loss
+  ! vegn%mineralN = 0.00025
 
 ! Check if soil C/N is lower than CN0
   fast_N_free = MAX(0., vegn%metabolicN  - vegn%metabolicL/CN0metabolicL)
@@ -2059,6 +2075,7 @@ subroutine initialize_vegn_tile(vegn,nCohorts,namelistfile)
       read (nml_unit, nml=initial_state_nml, iostat=io, end=20)
 20    close (nml_unit)
       write(*,nml=initial_state_nml)
+
       ! Initialize plant cohorts
       init_n_cohorts = nCohorts ! Weng,2018-11-21
       allocate(cc(1:init_n_cohorts), STAT = istat)

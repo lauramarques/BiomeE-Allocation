@@ -17,7 +17,7 @@ f_initialBSW = 0.005,
 ! species       0        1         2         3         4       5         6         7       8         9         10
 lifeform      = 0,       1,        1,        1,        1,      1,        1,        1,      1,        1,        1,    ! 0: grass; 1 Woody
 phenotype     = 0,       1,        1,        1,        1,      1,        1,        1,      1,        1,        0,    ! 0: Deciduous; 1 Evergreen
-pt            = 1,       0,        0,        0,        0,      0,        0,        0,      0,        0,        0,    ! 0: C3; 1: C4
+pt            = 1,       0,        0,        0,        0,      0,        0,        0,      0,        0,        9999,    ! 0: C3; 1: C4
 seedlingsize  = 0.02,    0.05,     0.05,     0.05,     0.05,   0.05,     0.05,     0.05,   0.05,     0.05,     0.05,  ! initial size of seedlings
 LMA           = 0.035,   0.14,     0.14,     0.14,     0.14,   0.14,    0.14,   0.14,     0.14,     0.14,     0.035,! Leaf mass per unit area
 phiRL         = 4.0,     1.0,      2.0,      3.0,      4.0,     5.0,     6.0,      7.0,     8.0,    9.0,      3.0,
@@ -60,16 +60,21 @@ maturalage    = 0.5,     5,        5,        5,        5,      5,        5,     
                                ! low  N input --> Evergreen
 
 ! Model run
- filepath_in = '/Users/eweng/Documents/BiomeESS/forcingData/'
- climfile    = 'US-Ha1forcing.txt' ! 'US-WCrforcing.txt' !   'CA-Manforcing.txt' !
+ filepath_in = '/Users/lmarques/BiomeE-Allocation/model/input/'
+ climfile    = 'ORNL_forcing.txt' ! 'US-WCrforcing.txt' !   'CA-Manforcing.txt' !
                ! 'CA-Manforcing.txt'   !  'US-WBWforcing.txt'
                !   'US-Dk1forcing.txt' ! CA-Obsforcing.txt
                !   'ORNL_forcing.txt'  ! 'KNZ_amb.csv' !  'KNZ_irr.csv' !
  model_run_years       =  1800, ! 1200,
  equi_days             =  0,
- outputhourly          =  .False. ! .True. !
- outputdaily           =  .True.  ! .False. ! .True.
- do_U_shaped_mortality =  .False. ! .True. !
- update_annualLAImax   =  .False. ! .True. !
- do_closedN_run        =  .True.
+ recycle               = 11, ! 9 (US-WCrforcing) or 11 (ORNL_forcing) SOFUN
+ nyeartrend            = 11, ! 9 (US-WCrforcing) or 11 (ORNL_forcing) SOFUN
+ outputhourly          =  .False., ! .True. !
+ outputdaily           =  .True.,  ! .False. ! .True.
+ do_U_shaped_mortality =  .False., ! .True. !
+ update_annualLAImax   =  .False., ! .True. !
+ do_closedN_run        =  .True.,
+ spinup                = .True.,
+ ! firstyeartrend        = 2002,
+ ! spinupyears           = 1800,
  /

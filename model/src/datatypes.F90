@@ -533,7 +533,6 @@ namelist /vegn_parameters_nml/  &
 
 ! -------------------------------------------
 
-
 ! soil parameters
 ! Coarse  Medium   Fine    CM     CF     MF    CMF    Peat    MCM
   real :: GMD(n_dim_soil_types) = & ! geometric mean partice diameter, mm
@@ -578,8 +577,8 @@ real   :: N_input    = 0.0008 ! annual N input to soil N pool, kgN m-2 yr-1
 real      :: dt_fast_yr = 1.0 / (365.0 * 24.0) ! daily
 real      :: step_seconds = 3600.0
 
-character(len=80) :: filepath_in = '/Users/eweng/Documents/BiomeESS/forcingData/'
-character(len=160) :: climfile = 'US-Ha1forcing.txt'
+character(len=80) :: filepath_in != '/Users/lmarques/BiomeE-Allocation/model/input/'
+character(len=160) :: climfile != 'ORNL_forcing.txt'
 integer   :: model_run_years = 100
 integer   :: equi_days       = 0 ! 100 * 365
 logical   :: outputhourly = .False.
@@ -654,14 +653,18 @@ subroutine initialize_PFT_data(namelistfile)
   integer :: i
   integer :: nml_unit
 
-!  Read parameters from the parameter file (namelist)
+! Read parameters from the parameter file (namelist)
   if(read_from_parameter_file)then
       nml_unit = 999
       open(nml_unit, file=namelistfile, form='formatted', action='read', status='old')
       read (nml_unit, nml=vegn_parameters_nml, iostat=io, end=10)
 10    close (nml_unit)
    endif
-      write(*,nml=vegn_parameters_nml)
+  !    print*,"################################"
+   !   write(*,nml=vegn_parameters_nml)
+      !stop 'here i am'
+
+
   ! initialize vegetation data structure
   spdata%pt         = pt
   spdata%phenotype  = phenotype
@@ -714,6 +717,7 @@ subroutine initialize_PFT_data(namelistfile)
   spdata%fNSNmax      = fNSNmax
   spdata%phiRL        = phiRL
   spdata%phiCSA       = phiCSA
+  
   ! root urnover rate
   spdata%alpha_FR = alpha_FR
 
@@ -807,61 +811,61 @@ subroutine Zero_diagnostics(vegn)
   type(cohort_type),pointer :: cc
   integer :: i
   !daily
-  vegn%dailyfixedN = 0.
-  vegn%dailyPrcp = 0.0
-  vegn%dailyTrsp = 0.0
-  vegn%dailyEvap = 0.0
-  vegn%dailyRoff = 0.0
-  vegn%dailyNup  = 0.0
-  vegn%dailyGPP = 0.0
-  vegn%dailyNPP = 0.0
-  vegn%dailyResp = 0.0
-  vegn%dailyRh   = 0.0
-
+  vegn%dailyfixedN  = 0.
+  vegn%dailyPrcp    = 0.0
+  vegn%dailyTrsp    = 0.0
+  vegn%dailyEvap    = 0.0
+  vegn%dailyRoff    = 0.0
+  vegn%dailyNup     = 0.0
+  vegn%dailyGPP     = 0.0
+  vegn%dailyNPP     = 0.0
+  vegn%dailyResp    = 0.0
+  vegn%dailyRh      = 0.0
+  
   !annual
   vegn%annualfixedN = 0.
-  vegn%annualPrcp = 0.0
-  vegn%annualTrsp = 0.0
-  vegn%annualEvap = 0.0
-  vegn%annualRoff = 0.0
-  vegn%annualGPP = 0.0
-  vegn%annualNPP = 0.0
-  vegn%annualResp = 0.0
-  vegn%annualRh   = 0.0
-  vegn%N_P2S_yr  = 0.
-  vegn%annualN   = 0.
-  vegn%Nloss_yr  = 0.
-  vegn%annualNup  = 0.0
+  vegn%annualPrcp   = 0.0
+  vegn%annualTrsp   = 0.0
+  vegn%annualEvap   = 0.0
+  vegn%annualRoff   = 0.0
+  vegn%annualGPP    = 0.0
+  vegn%annualNPP    = 0.0
+  vegn%annualResp   = 0.0
+  vegn%annualRh     = 0.0
+  vegn%N_P2S_yr     = 0.
+  vegn%annualN      = 0.
+  vegn%Nloss_yr     = 0.
+  vegn%annualNup    = 0.0
 
   do i = 1, vegn%n_cohorts
-     cc => vegn%cohorts(i)
-     cc%C_growth = 0.0
-     cc%N_growth = 0.0
-     cc%gpp      = 0.0
-     cc%npp      = 0.0
-     cc%resp     = 0.0
-     cc%resl     = 0.0
-     cc%resr     = 0.0
-     cc%resg     = 0.0
-     cc%transp   = 0.0
+     cc              => vegn%cohorts(i)
+     cc%C_growth     = 0.0
+     cc%N_growth     = 0.0
+     cc%gpp          = 0.0
+     cc%npp          = 0.0
+     cc%resp         = 0.0
+     cc%resl         = 0.0
+     cc%resr         = 0.0
+     cc%resg         = 0.0
+     cc%transp       = 0.0
      !daily
-     cc%dailyTrsp = 0.0
-     cc%dailyGPP = 0.0
-     cc%dailyNPP = 0.0
-     cc%dailyResp= 0.0
-     cc%dailyNup   = 0.0
-     cc%dailyfixedN = 0.0
+     cc%dailyTrsp    = 0.0
+     cc%dailyGPP     = 0.0
+     cc%dailyNPP     = 0.0
+     cc%dailyResp    = 0.0
+     cc%dailyNup     = 0.0
+     cc%dailyfixedN  = 0.0
      ! annual
-     cc%annualTrsp = 0.0
-     cc%annualGPP = 0.0
-     cc%annualNPP = 0.0
-     cc%annualResp= 0.0
-     cc%annualNup   = 0.0
+     cc%annualTrsp   = 0.0
+     cc%annualGPP    = 0.0
+     cc%annualNPP    = 0.0
+     cc%annualResp   = 0.0
+     cc%annualNup    = 0.0
      cc%annualfixedN = 0.0
-     cc%NPPleaf   = 0.0
-     cc%NPProot   = 0.0
-     cc%NPPwood   = 0.0
-     cc%DBH_ys    = cc%DBH
+     cc%NPPleaf      = 0.0
+     cc%NPProot      = 0.0
+     cc%NPPwood      = 0.0
+     cc%DBH_ys       = cc%DBH
   enddo
 end subroutine Zero_diagnostics
 
@@ -975,34 +979,35 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
   !-------local var ------
   type(cohort_type), pointer :: cc    ! current cohort
   integer :: i
+  integer, parameter :: ndayyear = 365  
 
   ! Output and zero daily variables
       !!! daily !! cohorts output
       do i = 1, vegn%n_cohorts
           cc => vegn%cohorts(i)
-          if(outputdaily.and. iday>equi_days) &
-          write(fno3,'(6(I5,","),1(F8.1,","),25(F12.4,","))')  &
-                iyears,idoy,i, cc%ccID,cc%species,cc%layer,   &
+          ! if(outputdaily.and. iday>equi_days) &
+          write(fno3,'(6(I5,","),1(F8.1,","),25(F12.4,","))') iyears, &
+                idoy,i, cc%ccID,cc%species,cc%layer,   &
                 cc%nindivs*10000, cc%layerfrac, cc%LAI, &
                 cc%dailygpp,cc%dailyresp,cc%dailytrsp, &
-                cc%seedC,cc%NPPleaf,cc%NPProot,cc%NPPwood, &
+                cc%NPPleaf,cc%NPProot,cc%NPPwood, &
                 cc%NSC, cc%seedC, cc%bl, cc%br, cc%bsw, cc%bHW, &
                 cc%NSN*1000, cc%seedN*1000, cc%leafN*1000, &
                 cc%rootN*1000,cc%sapwN*1000,cc%woodN*1000
 
           ! annual sum
-          cc%annualGPP = cc%annualGPP + cc%dailyGPP
-          cc%annualNPP = cc%annualNPP + cc%dailyNPP
+          cc%annualGPP  = cc%annualGPP + cc%dailyGPP
+          cc%annualNPP  = cc%annualNPP + cc%dailyNPP
           cc%annualResp = cc%annualResp + cc%dailyResp
           cc%annualTrsp = cc%annualTrsp + cc%dailyTrsp
           ! Zero Daily variables
-          cc%dailyTrsp = 0.0
-          cc%dailyGPP = 0.0
-          cc%dailyNPP = 0.0
-          cc%dailyResp = 0.0
+          cc%dailyTrsp  = 0.0
+          cc%dailyGPP   = 0.0
+          cc%dailyNPP   = 0.0
+          cc%dailyResp  = 0.0
       enddo
       !! Tile level, daily
-      if(outputdaily.and. iday>equi_days) then
+      ! if(outputdaily.and. iday>equi_days) 
          call summarize_tile(vegn)
          write(fno4,'(2(I5,","),60(F12.6,","))') iyears, idoy,  &
             vegn%tc_daily, vegn%dailyPrcp, vegn%soilwater,      &
@@ -1017,9 +1022,7 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
             vegn%MicrobialC, vegn%metabolicL, vegn%structuralL, &
             vegn%MicrobialN*1000, vegn%metabolicN*1000, vegn%structuralN*1000, &
             vegn%mineralN*1000,   vegn%dailyNup*1000
-      endif
 
-        !annual tile
         ! Annual summary:
         vegn%annualNup  = vegn%annualNup  + vegn%dailyNup
         vegn%annualGPP  = vegn%annualGPP  + vegn%dailygpp
@@ -1030,6 +1033,10 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
         vegn%annualTrsp = vegn%annualTrsp + vegn%dailytrsp
         vegn%annualEvap = vegn%annualEvap + vegn%dailyevap
         vegn%annualRoff = vegn%annualRoff + vegn%dailyRoff
+
+        !print*,'vegn%NSC, vegn%LAI', vegn%NSC, vegn%LAI
+        ! print*, '  NSC bl bsw bHW br seedC nindivs', cc%NSC,  cc%bl,  cc%bsw,  cc%bHW,  cc%br,   cc%seedC, cc%nindivs  ! xxx debug
+        ! print*, 'more', vegn%NSN,  vegn%SeedN,  vegn%leafN,  vegn%rootN,  vegn%SapwoodN,  vegn%woodN  ! xxx debug
 
        ! zero:
        vegn%dailyNup  = 0.0
@@ -1044,9 +1051,9 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
  end subroutine daily_diagnostics
 
 !======================================================
- subroutine annual_diagnostics(vegn, iyears,f1,f2)
+ subroutine annual_diagnostics(vegn, iyears,fno2,fno5)
    type(vegn_tile_type), intent(inout) :: vegn
-   integer, intent(in) :: f1,f2, iyears
+   integer, intent(in) :: fno2,fno5, iyears
 
 !   --------local var --------
     type(cohort_type), pointer :: cc
@@ -1054,7 +1061,7 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
     real :: plantC, plantN, soilC, soilN
     integer :: i
 
-    write(f1,'(2(I6,","),1(F9.2,","))')iyears, vegn%n_cohorts,vegn%annualN*1000
+    ! write(fno2,'(2(I6,","),1(F9.2,","))')iyears, vegn%n_cohorts,vegn%annualN*1000
     ! write(*,  '(2(I6,","),1(F9.2,","))')iyears !, vegn%n_cohorts,vegn%annualN*1000
     !! output yearly variables
     !write(*,'(3(a5,","),25(a9,","))') &
@@ -1073,27 +1080,15 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
         froot = cc%NPProot/treeG
         fwood = cc%NPPwood/treeG
         dDBH = (cc%DBH   - cc%DBH_ys)*1000.
-        write(f1,'(1(I7,","),2(I4,","),1(F9.1,","),45(F12.4,","))')        &
-            cc%ccID,cc%species,cc%layer,                        &
-            cc%nindivs*10000, cc%layerfrac,dDBH,                &
-            cc%dbh,cc%height,cc%crownarea,                      &
-            cc%bsw+cc%bHW,cc%nsc,cc%NSN*1000,                   &
-            treeG,fseed, fleaf, froot, fwood,                 &
-            cc%annualGPP,cc%annualNPP,                          &
-            cc%annualNup*1000,cc%annualfixedN*1000,             &
+        write(fno2,'(2(I7,","),2(I4,","),1(F9.1,","),45(F12.4,","))')    &
+            iyears,cc%ccID,cc%species,cc%layer,                          &
+            cc%nindivs*10000, cc%layerfrac,dDBH,                         &
+            cc%dbh,cc%height,cc%crownarea,                               &
+            cc%bsw+cc%bHW,cc%nsc,cc%NSN*1000,                            &
+            treeG,fseed, fleaf, froot, fwood,                            &
+            cc%annualGPP,cc%annualNPP,                                   &
+            cc%annualNup*1000,cc%annualfixedN*1000,                      &
             spdata(cc%species)%laimax
-
-        !! Screen output
-        !write(*,'(1(I7,","),2(I4,","),1(F9.1,","),25(F9.2,","))')    &
-        !            cc%ccID,cc%species,cc%layer,                     &
-        !            cc%nindivs*10000, cc%layerfrac,dDBH,             &
-        !            cc%dbh,cc%height,cc%crownarea,                   &
-        !            cc%bsw+cc%bHW,cc%nsc,cc%NSN*1000,                &
-        !            fseed, fleaf, froot, fwood,                      &
-        !            cc%annualGPP/cc%crownarea,                       &
-        !            cc%annualNPP/cc%crownarea,                       &
-        !            cc%annualNup*1000,cc%annualfixedN*1000,          &
-        !            spdata(cc%species)%laimax
     enddo
 
     ! tile pools output
@@ -1109,7 +1104,7 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
     soilC  = vegn%MicrobialC + vegn%metabolicL + vegn%structuralL
     soilN  = vegn%MicrobialN + vegn%metabolicN + vegn%structuralN + vegn%mineralN
     vegn%totN = plantN + soilN
-    write(f2,'(1(I5,","),27(F9.4,","),6(F9.3,","),18(F10.4,","))') &
+    write(fno5,'(1(I5,","),27(F9.4,","),6(F9.3,","),18(F10.4,","))') &
         iyears,       &
         vegn%CAI,vegn%LAI, &
         vegn%annualGPP, vegn%annualResp, vegn%annualRh, &
