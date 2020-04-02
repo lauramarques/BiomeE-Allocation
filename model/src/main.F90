@@ -104,7 +104,8 @@ program BiomeESS
    open(fno3,file=trim(plantCNpools),   ACTION='write', IOSTAT=istat2)
    open(fno4,file=trim(soilCNpools),    ACTION='write', IOSTAT=istat3)
    open(fno5,file=trim(allpools),       ACTION='write', IOSTAT=istat3)
-   ! head
+
+   ! write header to files
    write(fno1,'(5(a8,","),25(a12,","))')      &
         'year','doy','hour','rad',            &
         'Tair','Prcp', 'GPP', 'Resp',         &
@@ -144,14 +145,15 @@ program BiomeESS
         'McrbC','fastSOM',   'SlowSOM',                        &
         'McrbN','fastSoilN', 'slowSoilN',                      &
         'mineralN', 'N_fxed','N_uptk','N_yrMin','N_P2S','N_loss', &
-        'seedC','seedN','Seedling_C','Seedling_N'
+        'totseedC','totseedN','Seedling_C','Seedling_N'
 
 
    ! Parameter initialization: Initialize PFT parameters
+   ! print*,'1: ', vegn%LAI
    call initialize_PFT_data(namelistfile)
    ! Initialize vegetation tile and plant cohorts
    allocate(vegn)
-   !print*,'2: ', vegn%SapwoodC
+   !print*,'2: ', vegn%LAI
    call initialize_vegn_tile(vegn,nCohorts,namelistfile)
    ! Sort and relayer cohorts
    !print*,'3: ', vegn%SapwoodC
@@ -169,6 +171,7 @@ program BiomeESS
    ! total years of model run
    totyears = model_run_years
    totdays  = INT(totyears/yr_data+1)*days_data
+  ! print*,'totdays, days_data ', totdays, days_data
    equi_days = totdays - days_data
 
   ! print*,'equi_days ', equi_days
@@ -204,6 +207,11 @@ program BiomeESS
              call hourly_diagnostics(vegn,forcingData(idata),iyears,idoy,i,idays,fno1)
 
         enddo ! hourly or half-hourly
+
+        ! if (idoy == 365) stop 'consistency?'
+        ! if (idoy == 100 .and. iyears == 3) stop 'consistency?'
+
+
         vegn%Tc_daily = vegn%Tc_daily/steps_per_day
         tsoil         = tsoil/steps_per_day
         soil_theta    = vegn%thetaS
@@ -220,24 +228,34 @@ program BiomeESS
 
 
         !write(*,*)idays,equi_days
+        ! print*,'6: ', vegn%LAI
         call daily_diagnostics(vegn,forcingData(idata),iyears,idoy,idays,fno3,fno4)
         !write(*,*)iyears,idoy
+        
         ! daily calls
+        ! print*,'7: ', vegn%LAI
         call vegn_phenology(vegn,j)
+        
         !call vegn_starvation(vegn)
-        call vegn_growth_EW(vegn)
+        ! print*,'8: ', vegn%LAI
+        call vegn_growth_EW(vegn)   
+
+        ! if (idays>3) stop 'here' 
 
         !! annual calls
         idata = MOD(simu_steps+1, datalines)+1 !
         year1 = forcingData(idata)%year  ! Check if it is the last day of a year
         new_annual_cycle = ((year0 /= year1).OR. & ! new year
                 (idata == steps_per_day .and. simu_steps > datalines)) ! last line
+        
         if(new_annual_cycle)then
 
-            idoy = 0
+            ! idoy = 0
 
             print*,'sim. year  ', iyears
             print*,'real year: ', year0
+
+            idoy = 0
 
             !call annual_calls(vegn)
             if(update_annualLAImax) call vegn_annualLAImax_update(vegn)
@@ -257,7 +275,8 @@ program BiomeESS
             ! set annual variables zero
             call Zero_diagnostics(vegn)
 
-            print*,'vegn%n_cohorts  ', vegn%n_cohorts 
+            ! print*,'vegn%n_cohorts', vegn%n_cohorts 
+            ! print*,'iyears ', iyears
 
             ! update the years of model run
             iyears = iyears + 1
@@ -299,8 +318,8 @@ subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
   integer :: idx_climatedata
 
 ! xxx temporary 
-    character(len=80) :: filepath_in = '/Users/lmarques/BiomeE-Allocation/model/input/'
-    character(len=80) :: climfile    = 'ORNL_forcing.txt'
+    ! character(len=80) :: filepath_in = '/Users/lmarques/BiomeE-Allocation/model/input/'
+    ! character(len=80) :: climfile    = 'ORNL_forcing.txt'
 
   climfile=trim(filepath_in)//trim(climfile)
   write(*,*)'inputfile: ',climfile
@@ -347,8 +366,8 @@ subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
   ! xxx try
     allocate(climateData(datalines - 72))  !3*24
     days_data = days_data - 3
-
     idx_climatedata = 0
+
     do i=1,datalines
       ! print*,'i, doy_data(i), year_data(i)', i, doy_data(i), year_data(i)
      if (.not. (doy_data(i)==60 .and. (year_data(i)==2000 .or. year_data(i)==2004 .or. year_data(i)==2008))) then
@@ -398,6 +417,7 @@ subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
   ! enddo
   ! forcingData => climateData
   ! write(*,*)"forcing", datalines,days_data,yr_data
+
 end subroutine read_FACEforcing
 
 !=============================================================
@@ -422,8 +442,8 @@ subroutine read_NACPforcing(forcingData,datalines,days_data,yr_data,timestep)
   ! xxx try
   integer :: idx_climatedata
 
-  character(len=80) :: filepath_in = '/Users/lmarques/sofun/input/'
-  character(len=80) :: climfile    = 'US-WCrforcing.txt'
+  ! character(len=80) :: filepath_in = '/Users/lmarques/sofun/input/'
+  ! character(len=80) :: climfile    = 'US-WCrforcing.txt'
 
   climfile=trim(filepath_in)//trim(climfile)
   write(*,*)'inputfile: ',climfile
@@ -469,9 +489,10 @@ subroutine read_NACPforcing(forcingData,datalines,days_data,yr_data,timestep)
   yr_data  = year_data(datalines-1) - year_data(1) + 1
   !allocate(climateData(datalines))
   ! xxx try
-  allocate(climateData(datalines - 96))
+  allocate(climateData(datalines - 96)) !48*2
   days_data = days_data - 2
   idx_climatedata = 0
+
   do i=1,datalines
      if (.not. (doy_data(i)==60 .and. (year_data(i)==2000 .or. year_data(i)==2004))) then
   
@@ -498,9 +519,9 @@ subroutine read_NACPforcing(forcingData,datalines,days_data,yr_data,timestep)
      end if
   enddo
   forcingData => climateData
-  ! xxx try
   datalines = datalines - 96
   write(*,*)"forcing", datalines,days_data,yr_data
+
 end subroutine read_NACPforcing
 !=====================================================
 end program BiomeESS

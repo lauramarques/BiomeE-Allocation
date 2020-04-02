@@ -113,6 +113,8 @@ subroutine SoilWaterDynamicsLayer(forcing,vegn)    !outputs
   real    :: WaterBudgetL(max_lev)
   integer :: i,j,k
 
+  ! ! xxx debug
+  ! vegn%wcl(:) = 0.6
 ! Soil water conditions
   !call water_supply_layer(forcing, vegn)
 
@@ -140,7 +142,13 @@ subroutine SoilWaterDynamicsLayer(forcing,vegn)    !outputs
 !    calculate kappa  ! light extinction coefficient of corwn layers
      kappa = 0.75
 !    thermodynamic parameters for air
+      ! print*, forcing%radiation, kappa, vegn%LAI    ! xxx debug
+
       Rsoilabs = forcing%radiation * exp(-kappa*vegn%LAI)
+     ! print*,'forcing%radiation', forcing%radiation
+      ! print*,'kappa', kappa
+      ! print*,'vegn%LAI', vegn%LAI
+      ! print*,'Rsoilabs', Rsoilabs
       Hgrownd = 0.0
       TairK = forcing%Tair
       Tair  = forcing%Tair - 273.16
@@ -169,6 +177,22 @@ subroutine SoilWaterDynamicsLayer(forcing,vegn)    !outputs
   !Calculate Esoil, kg m-2 step-1
   vegn%evap = min(Esoil/H2OLv * step_seconds, &
                   0.2*vegn%wcl(1) * thksl(1) *1000.) ! kg m-2 step-1
+  ! print*,'slope', slope
+  ! print*,'Rsoilabs', Rsoilabs
+  ! print*,'rhocp', rhocp
+  ! print*,'Dair', Dair
+  ! print*,'raero', raero
+  ! print*,'psyc', psyc
+  ! print*,'rsoil', rsoil
+  ! print*,'vegn%wcl(1)', vegn%wcl(1)
+  ! print*,'FLDCAP', FLDCAP
+
+  ! print*,'vegn%evap',vegn%evap
+  ! print*,'Esoil',Esoil
+  ! print*,'H2OLv',H2OLv
+  ! print*,'myinterface%step_seconds', step_seconds
+  ! print*,'vegn%wcl(1)',vegn%wcl(1)
+  ! print*,'thksl(1)',thksl(1)
   !vegn%wcl(1) = vegn%wcl(1) - vegn%evap/(thksl(1) *1000.)
   WaterBudgetL(1) = WaterBudgetL(1) - vegn%evap
 

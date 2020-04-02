@@ -162,6 +162,8 @@ subroutine vegn_photosynthesis (forcing, vegn)
         cc%gpp  = (psyn-resp) * mol_C * cc%leafarea * step_seconds ! kgC step-1 tree-1
         !if(isnan(cc%gpp))cc%gpp=0.0
 
+        ! print*,'vegn_photosynthesis: cc%gpp = ', cc%gpp
+
         if(isnan(cc%gpp))stop '"gpp" is a NaN'
      else
         ! no leaves means no photosynthesis and no stomatal conductance either
@@ -379,7 +381,7 @@ subroutine gs_Leuning(rad_top, rad_net, tl, ea, lai, &
   endif
 
   ! find water availability diagnostic demand
-  Ed = gs_w * ds*mol_air/mol_h2o ! ds*mol_air/mol_h2o is the humidity deficit in [mol_h2o/mol_air]
+  Ed = gs_w * ds * mol_air/mol_h2o ! ds*mol_air/mol_h2o is the humidity deficit in [mol_h2o/mol_air]
   ! the factor mol_air/mol_h2o makes units of gs_w and humidity deficit ds compatible:
   if (Ed>ws) then
      w_scale=ws/Ed;
@@ -556,6 +558,8 @@ subroutine fetch_CN_for_growth(cc)
   do i = 1, vegn%n_cohorts   
      cc => vegn%cohorts(i)
  !    call biomass_allocation(cc)
+     ! print*,i, cc%status
+
      associate (sp => spdata(cc%species)) ! F2003
      if (cc%status == LEAF_ON) then
         ! Get carbon from NSC pool
@@ -1453,6 +1457,8 @@ subroutine vegn_N_uptake(vegn, tsoil)
   logical :: NSN_not_full
   integer :: i
 
+  ! ! xxx consistency checks
+  ! vegn%mineralN = 0.2
 !! Nitrogen uptake parameter
 ! It considers competition here. How much N one can absorp depends on 
 ! how many roots it has and how many roots other individuals have.
@@ -1475,6 +1481,8 @@ subroutine vegn_N_uptake(vegn, tsoil)
         ! Add a temperature response equation herefor rho_N_up0 (Zhu Qing 2016)
         ! rho_N_up = 1.-exp(-rho_N_up0 * N_roots/(N_roots0+N_roots) * hours_per_year * dt_fast_yr) ! rate at given root density and time period
         rho_N_up = rho_N_up0 * N_roots/(N_roots0+N_roots) * hours_per_year * dt_fast_yr
+        ! print*,'rho_N_up, mineralN, tsoil, Tfactor', rho_N_up, vegn%mineralN, tsoil, exp(9000.0 * (1./298.16 - 1./tsoil))
+
         totNup = rho_N_up * vegn%mineralN * exp(9000.0 * (1./298.16 - 1./tsoil)) ! kgN m-2 time step-1
         avgNup = totNup / N_roots ! kgN time step-1 kg roots-1
         ! Nitrogen uptaken by each cohort, N_uptake
@@ -2120,7 +2128,10 @@ subroutine initialize_vegn_tile(vegn,nCohorts,namelistfile)
       vegn%thetaS = 1.0
 
       ! tile
+      ! print*, 'initialize_vegn_tile() 1: ',  vegn%LAI   ! xxx debug
       call summarize_tile(vegn)
+      ! print*, 'initialize_vegn_tile() 2: ',  vegn%LAI   ! xxx debug
+
       vegn%initialN0 = vegn%NSN + vegn%SeedN + vegn%leafN +      &
                        vegn%rootN + vegn%SapwoodN + vegn%woodN + &
                        vegn%MicrobialN + vegn%metabolicN +       &
@@ -2161,7 +2172,9 @@ subroutine initialize_vegn_tile(vegn,nCohorts,namelistfile)
       vegn%previousN   = vegn%mineralN
 
       ! tile
+      print*, 'initialize_vegn_tile() 3: ',  vegn%LAI   ! xxx debug
       call summarize_tile(vegn)
+      print*, 'initialize_vegn_tile() 4: ',  vegn%LAI   ! xxx debug
       vegn%initialN0 = vegn%NSN + vegn%SeedN + vegn%leafN +      &
                        vegn%rootN + vegn%SapwoodN + vegn%woodN + &
                        vegn%MicrobialN + vegn%metabolicN +       &

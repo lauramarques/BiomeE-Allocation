@@ -3,14 +3,14 @@ soiltype = 3,
 FLDCAP   = 0.4,
 WILTPT   = 0.05,
 K1 =  2.0,  ! turnover rate of fast SOM per year
-K2 =  0.1   ! 0.12 ! 0.2, ! 0.075 ! turnover rate of slow SOM per year
+K2 =  0.1,   ! 0.12 ! 0.2, ! 0.075 ! turnover rate of slow SOM per year
 K_nitrogen = 0.0, ! 1.2 ! 2.5 ! rate of a year, 2.5
 etaN       = 0.0, ! 0.025 ! loss rate with runoff
 MLmixRatio = 0.6, ! 0.8 ! fraction of microbes to litter
 l_fract =0.0,
 retransN = 0.0,
 fNSNmax = 5.0, ! 5.0
-f_N_add = 0.02 ! 0.005, ! 0.02
+f_N_add = 0.02, ! 0.005, ! 0.02
 f_initialBSW = 0.005,
 ! alpha_FR =  1.2; gamma_FR = 12.0; dSlowSOM = 2.5 * iSOM + 1.5; rho_N_up0 = 0.1
 
@@ -67,14 +67,10 @@ maturalage    = 0.5,     5,        5,        5,        5,      5,        5,     
                !   'ORNL_forcing.txt'  ! 'KNZ_amb.csv' !  'KNZ_irr.csv' !
  model_run_years       =  1800, ! 1200,
  equi_days             =  0,
- recycle               = 11, ! 9 (US-WCrforcing) or 11 (ORNL_forcing) SOFUN
- nyeartrend            = 11, ! 9 (US-WCrforcing) or 11 (ORNL_forcing) SOFUN
  outputhourly          =  .False., ! .True. !
  outputdaily           =  .True.,  ! .False. ! .True.
  do_U_shaped_mortality =  .False., ! .True. !
  update_annualLAImax   =  .False., ! .True. !
  do_closedN_run        =  .True.,
- spinup                = .True.,
- ! firstyeartrend        = 2002,
- ! spinupyears           = 1800,
+
  /

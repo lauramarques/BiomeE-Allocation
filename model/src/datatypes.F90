@@ -577,8 +577,8 @@ real   :: N_input    = 0.0008 ! annual N input to soil N pool, kgN m-2 yr-1
 real      :: dt_fast_yr = 1.0 / (365.0 * 24.0) ! daily
 real      :: step_seconds = 3600.0
 
-character(len=80) :: filepath_in != '/Users/lmarques/BiomeE-Allocation/model/input/'
-character(len=160) :: climfile != 'ORNL_forcing.txt'
+character(len=80) :: filepath_in != '/Users/eweng/Documents/BiomeESS/forcingData/'
+character(len=160) :: climfile != 'US-Ha1forcing.txt'
 integer   :: model_run_years = 100
 integer   :: equi_days       = 0 ! 100 * 365
 logical   :: outputhourly = .False.
@@ -810,6 +810,9 @@ subroutine Zero_diagnostics(vegn)
   !-------local var
   type(cohort_type),pointer :: cc
   integer :: i
+
+  ! print*,'Zero_diagnostics() 1: vegn%dailyEvap ', vegn%dailyEvap
+
   !daily
   vegn%dailyfixedN  = 0.
   vegn%dailyPrcp    = 0.0
@@ -867,6 +870,9 @@ subroutine Zero_diagnostics(vegn)
      cc%NPPwood      = 0.0
      cc%DBH_ys       = cc%DBH
   enddo
+
+  ! print*,'Zero_diagnostics() 2: vegn%dailyEvap ', vegn%dailyEvap
+
 end subroutine Zero_diagnostics
 
 ! ========================
@@ -931,6 +937,7 @@ end subroutine summarize_tile
   ! Tile summary
   vegn%GPP    = 0.
   vegn%NPP    = 0.; vegn%Resp   = 0.
+
   do i = 1, vegn%n_cohorts
      cc => vegn%cohorts(i)
      ! cohort daily
@@ -943,11 +950,16 @@ end subroutine summarize_tile
      vegn%GPP    = vegn%GPP    + cc%gpp    * cc%nindivs
      vegn%NPP    = vegn%NPP    + cc%Npp    * cc%nindivs
      vegn%Resp   = vegn%Resp   + cc%Resp   * cc%nindivs
+
   enddo
+
   ! NEP is equal to NNP minus soil respiration
   vegn%nep = vegn%npp - vegn%rh ! kgC m-2 hour-1; time step is hourly
+
   !! Output horly diagnostics
   If(outputhourly.and. iday>equi_days) &
+  ! If(iday>equi_days) &
+
     write(fno1,'(3(I5,","),25(E11.4,","),25(F8.2,","))')  &
       iyears, idoy, ihour,      &
       forcingData%radiation,    &
@@ -967,6 +979,8 @@ end subroutine summarize_tile
   vegn%dailyEvap = vegn%dailyEvap + vegn%evap
   vegn%dailyRoff = vegn%dailyRoff + vegn%runoff
   vegn%dailyPrcp = vegn%dailyPrcp + forcing%rain * step_seconds
+
+  ! print*,'hourly_diagnostics() : vegn%evap, vegn%dailyEvap ', vegn%evap, vegn%dailyEvap
 
 end subroutine hourly_diagnostics
 
@@ -1005,10 +1019,15 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
           cc%dailyGPP   = 0.0
           cc%dailyNPP   = 0.0
           cc%dailyResp  = 0.0
+
       enddo
+
       !! Tile level, daily
-      ! if(outputdaily.and. iday>equi_days) 
-         call summarize_tile(vegn)
+      ! Beni Stocker: moved summarize_tile() out of conditional statement below
+      ! in order to update tile-level LAI each day (required e.g. for water balance)
+      call summarize_tile(vegn)
+      
+      ! if(outputdaily.and. iday>equi_days) & !! Remove conditional for output
          write(fno4,'(2(I5,","),60(F12.6,","))') iyears, idoy,  &
             vegn%tc_daily, vegn%dailyPrcp, vegn%soilwater,      &
             vegn%dailyTrsp, vegn%dailyEvap,vegn%dailyRoff,      &
@@ -1033,6 +1052,9 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
         vegn%annualTrsp = vegn%annualTrsp + vegn%dailytrsp
         vegn%annualEvap = vegn%annualEvap + vegn%dailyevap
         vegn%annualRoff = vegn%annualRoff + vegn%dailyRoff
+
+        ! print*,'vegn%dailyevap, vegn%annualEvap', vegn%dailyevap, vegn%annualEvap
+
 
         !print*,'vegn%NSC, vegn%LAI', vegn%NSC, vegn%LAI
         ! print*, '  NSC bl bsw bHW br seedC nindivs', cc%NSC,  cc%bl,  cc%bsw,  cc%bHW,  cc%br,   cc%seedC, cc%nindivs  ! xxx debug
