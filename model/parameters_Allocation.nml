@@ -65,7 +65,7 @@ maturalage    = 0.5,     5,        5,        5,        5,      5,        5,     
                ! 'CA-Manforcing.txt'   !  'US-WBWforcing.txt'
                !   'US-Dk1forcing.txt' ! CA-Obsforcing.txt
                !   'ORNL_forcing.txt'  ! 'KNZ_amb.csv' !  'KNZ_irr.csv' !
- model_run_years       =  1800, ! 1200,
+ model_run_years       =  1793, ! Important: Use a number multiple of the number of years in the forcing data (e.g. 1800 for 9 yrs in WU-Cr, 1793 for 11 yrs in ORNL)
  equi_days             =  0,
  outputhourly          =  .False., ! .True. !
  outputdaily           =  .True.,  ! .False. ! .True.

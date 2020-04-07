@@ -1103,7 +1103,7 @@ subroutine daily_diagnostics(vegn,forcing,iyears,idoy,iday,fno3,fno4)
         fwood = cc%NPPwood/treeG
         dDBH = (cc%DBH   - cc%DBH_ys)*1000.
 
-        print*,'iyears, cc%ccID', iyears, cc%ccID
+        ! print*,'iyears, cc%ccID', iyears, cc%ccID
 
         write(fno2,'(2(I7,","),2(I4,","),1(F9.1,","),45(F12.4,","))')    &
             iyears,cc%ccID,cc%species,cc%layer,                          &
