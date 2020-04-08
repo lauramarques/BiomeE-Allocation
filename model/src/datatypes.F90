@@ -581,7 +581,7 @@ character(len=80) :: filepath_in != '/Users/eweng/Documents/BiomeESS/forcingData
 character(len=160) :: climfile != 'US-Ha1forcing.txt'
 integer   :: model_run_years = 100
 integer   :: equi_days       = 0 ! 100 * 365
-logical   :: outputhourly = .False.
+logical   :: outputhourly = .True.
 logical   :: outputdaily  = .True.
 logical   :: do_U_shaped_mortality = .False.
 logical   :: update_annualLAImax = .False.
@@ -957,16 +957,16 @@ end subroutine summarize_tile
   vegn%nep = vegn%npp - vegn%rh ! kgC m-2 hour-1; time step is hourly
 
   !! Output horly diagnostics
+
   If(outputhourly.and. iday>equi_days) &
-  ! If(iday>equi_days) &
 
     write(fno1,'(3(I5,","),25(E11.4,","),25(F8.2,","))')  &
-      iyears, idoy, ihour,      &
-      forcingData%radiation,    &
-      forcingData%Tair,         &
-      forcingData%rain,         &
-      vegn%GPP,vegn%resp,vegn%transp,  &
-      vegn%evap,vegn%runoff,vegn%soilwater, &
+      iyears, idoy, ihour,                 &
+      forcing%radiation,                   & ! forcingData
+      forcing%Tair,                        & ! forcingData
+      forcing%rain,                        & ! forcingData
+      vegn%GPP,vegn%resp,vegn%transp,      &
+      vegn%evap,vegn%runoff,vegn%soilwater,&
       vegn%wcl(1),vegn%FLDCAP,vegn%WILTPT
 
   ! Daily summary:

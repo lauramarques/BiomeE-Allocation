@@ -67,7 +67,7 @@ maturalage    = 0.5,     5,        5,        5,        5,      5,        5,     
                !   'ORNL_forcing.txt'  ! 'KNZ_amb.csv' !  'KNZ_irr.csv' !
  model_run_years       =  1793, ! Important: Use a number multiple of the number of years in the forcing data (e.g. 1800 for 9 yrs in WU-Cr, 1793 for 11 yrs in ORNL)
  equi_days             =  0,
- outputhourly          =  .False., ! .True. !
+ outputhourly          =  .True., ! .True. !
  outputdaily           =  .True.,  ! .False. ! .True.
  do_U_shaped_mortality =  .False., ! .True. !
  update_annualLAImax   =  .False., ! .True. !
