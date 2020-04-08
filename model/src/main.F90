@@ -87,8 +87,7 @@ program BiomeESS
    character(len=50) :: parameterfile(10),chaSOM(10)
    character(len=50) :: namelistfile =  'parameters_Allocation.nml' !'parameters_WC_biodiversity.nml' ! 'parameters_CN.nml'
    ! 'parameters_Allocation.nml' !'parameters_Konza.nml' !
-   !
-
+  
    ! create output files
    filepath_out='output/'
    filesuffix  = '_test.csv' ! tag for simulation experiments
@@ -147,7 +146,6 @@ program BiomeESS
         'mineralN', 'N_fxed','N_uptk','N_yrMin','N_P2S','N_loss', &
         'totseedC','totseedN','Seedling_C','Seedling_N'
 
-
    ! Parameter initialization: Initialize PFT parameters
    ! print*,'1: ', vegn%LAI
    call initialize_PFT_data(namelistfile)
@@ -177,9 +175,9 @@ program BiomeESS
   ! print*,'equi_days ', equi_days
   ! print*,'days_data', days_data
   ! print*,'runyears  ', model_run_years
-  !  stop  
 
    ! ----- model run ---------- ! Model run starts here !!
+
    year0 = forcingData(1)%year
    iyears = 1
    idoy   = 0
@@ -208,10 +206,6 @@ program BiomeESS
 
         enddo ! hourly or half-hourly
 
-        ! if (idoy == 365) stop 'consistency?'
-        ! if (idoy == 100 .and. iyears == 3) stop 'consistency?'
-
-
         vegn%Tc_daily = vegn%Tc_daily/steps_per_day
         tsoil         = tsoil/steps_per_day
         soil_theta    = vegn%thetaS
@@ -226,7 +220,6 @@ program BiomeESS
           ! stop 'here'
          !end if 
 
-
         !write(*,*)idays,equi_days
         ! print*,'6: ', vegn%LAI
         call daily_diagnostics(vegn,forcingData(idata),iyears,idoy,idays,fno3,fno4)
@@ -239,8 +232,6 @@ program BiomeESS
         !call vegn_starvation(vegn)
         ! print*,'8: ', vegn%LAI
         call vegn_growth_EW(vegn)   
-
-        ! if (idays>3) stop 'here' 
 
         !! annual calls
         idata = MOD(simu_steps+1, datalines)+1 !
@@ -298,7 +289,7 @@ program BiomeESS
 
 !========================================================================
 ! read in forcing data (Users need to write their own data input procedure)
-subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
+ subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
   type(climate_data_type),pointer,intent(inout) :: forcingData(:)
   integer,intent(inout) :: datalines,days_data,yr_data
   real, intent(inout)   :: timestep
@@ -317,7 +308,7 @@ subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
   integer :: m,n
   integer :: idx_climatedata
 
-! xxx temporary 
+! temporary 
     ! character(len=80) :: filepath_in = '/Users/lmarques/BiomeE-Allocation/model/input/'
     ! character(len=80) :: climfile    = 'ORNL_forcing.txt'
 
@@ -418,11 +409,11 @@ subroutine read_FACEforcing(forcingData,datalines,days_data,yr_data,timestep)
   ! forcingData => climateData
   ! write(*,*)"forcing", datalines,days_data,yr_data
 
-end subroutine read_FACEforcing
+ end subroutine read_FACEforcing
 
 !=============================================================
 ! for reading in NACP site synthesis forcing
-subroutine read_NACPforcing(forcingData,datalines,days_data,yr_data,timestep)
+ subroutine read_NACPforcing(forcingData,datalines,days_data,yr_data,timestep)
   type(climate_data_type),pointer,intent(inout) :: forcingData(:)
   integer,intent(inout) :: datalines,days_data,yr_data
   real, intent(inout)   :: timestep
@@ -522,7 +513,7 @@ subroutine read_NACPforcing(forcingData,datalines,days_data,yr_data,timestep)
   datalines = datalines - 96
   write(*,*)"forcing", datalines,days_data,yr_data
 
-end subroutine read_NACPforcing
+ end subroutine read_NACPforcing
 !=====================================================
 end program BiomeESS
 
